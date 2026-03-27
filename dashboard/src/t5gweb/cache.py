@@ -848,7 +848,7 @@ def _process_single_jira_issue(issue, jira_conn):
             None if issue cannot be accessed
     """
     try:
-        bug = jira_conn.issue(issue["resourceKey"])
+        bug = jira_conn.issue(issue["resourceKey"], expand="renderedFields")
     except JIRAError:
         logging.warning("Can't access %s", issue["resourceKey"])
         return None
@@ -1027,12 +1027,19 @@ def _extract_private_keywords(bug):
         list: List of private keyword strings, or None if not set or empty
     """
     try:
-        private_keywords_raw = bug.fields.customfield_10999  # RH Private Keywords
+        private_keywords_raw = (
+            bug.renderedFields.customfield_10999
+        )  # RH Private Keywords
     except AttributeError:
         return None
 
     if private_keywords_raw is not None and len(private_keywords_raw) > 0:
-        return [private_keyword.value for private_keyword in private_keywords_raw]
+        # Private keywords are stored as a comma-separated list of strings
+        # like "Telco:Priority-1,Priority-2"
+        return [
+            private_keyword.strip()
+            for private_keyword in private_keywords_raw.split(",")
+        ]
     return None
 
 
