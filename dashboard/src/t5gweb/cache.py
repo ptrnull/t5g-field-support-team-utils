@@ -46,6 +46,29 @@ def get_cases(cfg):
     r = requests.get(url, headers=headers, params=payload)
     r.raise_for_status()
     cases_json = r.json()["response"]["docs"]
+    # The case portal only allows 9999 cases to be returned by a query, so we cannot
+    # simply paginate. We must use a different query to get the remaining cases.
+
+    # Total number of cases found by query
+    num_found = int(r.json()["response"].get("numFound"))
+    # Timestamp of the 9999th case found by query
+    newest_case_timestamp = cases_json[-1]["case_createdDate"]
+    if num_found > num_cases:
+        # Get cases > 9999
+        date_query = (
+            f"({cfg['query']} AND case_createdDate:[{newest_case_timestamp} TO *])"
+        )
+        # Start at 1 to avoid duplicates from the first query
+        payload = {
+            "q": date_query,
+            "partnerSearch": "false",
+            "start": 1,
+            "rows": num_cases,
+            "fl": fields,
+        }
+        r = requests.get(url, headers=headers, params=payload)
+        r.raise_for_status()
+        cases_json.extend(r.json()["response"]["docs"])
     end = time.time()
     logging.warning("found %s cases in %s seconds", len(cases_json), end - start)
     cases = {}
