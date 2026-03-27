@@ -53,7 +53,7 @@ def get_cases(cfg):
     num_found = int(r.json()["response"].get("numFound"))
     # Timestamp of the 9999th case found by query
     newest_case_timestamp = cases_json[-1]["case_createdDate"]
-    if num_found > num_cases:
+    if num_found > int(num_cases):
         # Get cases > 9999
         date_query = (
             f"({cfg['query']} AND case_createdDate:[{newest_case_timestamp} TO *])"
