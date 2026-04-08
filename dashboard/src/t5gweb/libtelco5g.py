@@ -648,6 +648,7 @@ def _build_card_info(case, cases, cfg, assignee):
             if len(full_description) > 253
             else full_description
         ),
+        "customfield_10783": "TRACK",
     }
 
     if assignee:
@@ -671,7 +672,6 @@ def _create_jira_card(card_info, jira_conn):
     """
     logging.warning(f"Creating card for case {card_info['summary'].split(':')[0]}")
     new_card = jira_conn.create_issue(fields=card_info)
-    new_card.update(fields={"customfield_10783": "TRACK"})  # Release Note Text
     logging.warning(f"Created {new_card.key}")
     return new_card
 
