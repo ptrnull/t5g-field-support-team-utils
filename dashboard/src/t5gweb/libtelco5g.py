@@ -1461,8 +1461,10 @@ def tag_bz():
                         if private_keywords is None:
                             private_keywords = ""
                         new_keywords = private_keywords
+                        if new_keywords:
+                            new_keywords += ","
                         if "Telco" not in new_keywords:
-                            new_keywords += ",Telco,Telco:Case"
+                            new_keywords += "Telco,Telco:Case"
                             logging.warning("tagging Jira Bug:" + str(card))
                             card.update(fields={"customfield_10999": new_keywords})
                             num_tagged += 1
@@ -1470,7 +1472,7 @@ def tag_bz():
                                 "cards"
                             ].append(str(card))
                         elif "Telco:Case" not in new_keywords:
-                            new_keywords += ",Telco:Case"
+                            new_keywords += "Telco:Case"
                             logging.warning("tagging Jira Bug:" + str(card))
                             card.update(fields={"customfield_10999": new_keywords})
                             num_tagged += 1
