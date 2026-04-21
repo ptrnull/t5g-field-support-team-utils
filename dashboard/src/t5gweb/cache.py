@@ -1028,7 +1028,7 @@ def _extract_private_keywords(bug):
     """
     try:
         private_keywords_raw = (
-            bug.renderedFields.customfield_10999
+            bug.renderedFields.customfield_11087
         )  # RH Private Keywords
     except AttributeError:
         return None

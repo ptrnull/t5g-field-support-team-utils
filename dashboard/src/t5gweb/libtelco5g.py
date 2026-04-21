@@ -1370,7 +1370,7 @@ def tag_bz():
     tagging actions.
 
     For Bugzilla bugs, updates the internal_whiteboard field.
-    For JIRA bugs, updates the Private Keywords (customfield_10999) field
+    For JIRA bugs, updates the Private Keywords (customfield_11087) field
     or falls back to Internal Whiteboard (customfield_11004) if Private
     Keywords is not available.
 
@@ -1444,7 +1444,7 @@ def tag_bz():
                     )
                     try:
                         # RH Private Keywords custom field
-                        private_keywords = card.renderedFields.customfield_10999
+                        private_keywords = card.renderedFields.customfield_11087
                     except AttributeError:
                         logging.warning(
                             "No Private Keywords field for {}, skipping".format(
@@ -1461,18 +1461,20 @@ def tag_bz():
                         if private_keywords is None:
                             private_keywords = ""
                         new_keywords = private_keywords
+                        if new_keywords:
+                            new_keywords += ","
                         if "Telco" not in new_keywords:
-                            new_keywords += ",Telco,Telco:Case"
+                            new_keywords += "Telco,Telco:Case"
                             logging.warning("tagging Jira Bug:" + str(card))
-                            card.update(fields={"customfield_10999": new_keywords})
+                            card.update(fields={"customfield_11087": new_keywords})
                             num_tagged += 1
                             email_body["Script Tagged Private Keywords"][
                                 "cards"
                             ].append(str(card))
                         elif "Telco:Case" not in new_keywords:
-                            new_keywords += ",Telco:Case"
+                            new_keywords += "Telco:Case"
                             logging.warning("tagging Jira Bug:" + str(card))
-                            card.update(fields={"customfield_10999": new_keywords})
+                            card.update(fields={"customfield_11087": new_keywords})
                             num_tagged += 1
                             email_body["Script Tagged Private Keywords"][
                                 "cards"
